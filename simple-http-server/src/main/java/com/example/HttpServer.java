@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Files;
 
-
 public class HttpServer {
     private static final int PORT = 8080;
     private static final String STATIC_DIR = "static";
@@ -21,7 +20,6 @@ public class HttpServer {
 
                     String requestStartLine = in.readLine();
                     System.out.println("Получили стартовую строку запроса: " + requestStartLine);
-
 
                     if (isValidGetRequest(requestStartLine)) {
                         String fileName = extractFileNameFromRequestStartLine(requestStartLine);
@@ -41,11 +39,16 @@ public class HttpServer {
 
                 } catch (Exception e) {
                     System.err.println("Ошибка при обработке клиентского запроса: " + e.getMessage());
+                    try (Socket clientSocket = serverSocket.accept();
+                         BufferedWriter out = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()))) {
+                        sendHttp500Response(out, e.getMessage());
+                    } catch (Exception ex) {
+                        System.err.println("Не удалось отправить ответ 500: " + ex.getMessage());
+                    }
                 }
             }
         }
     }
-
 
     private static boolean isValidGetRequest(String requestStartLine) {
         return requestStartLine != null && requestStartLine.startsWith("GET ");
@@ -108,6 +111,20 @@ public class HttpServer {
         out.flush();
 
         System.out.println("Отправлен HTTP ответ 400");
+    }
+
+    private static void sendHttp500Response(BufferedWriter out, String errorMessage) throws IOException {
+        String response = "<h1>500 Internal Server Error</h1><p>Произошла внутренняя ошибка сервера: " +
+                errorMessage + "</p>";
+
+        out.write("HTTP/1.1 500 Internal Server Error\r\n");
+        out.write("Content-Type: text/html; charset=UTF-8\r\n");
+        out.write("Content-Length: " + response.length() + "\r\n");
+        out.write("\r\n");
+        out.write(response);
+        out.flush();
+
+        System.out.println("Отправлен HTTP ответ 500");
     }
 
     private static String determineContentType(String fileName) {
