@@ -17,9 +17,9 @@ public class PaymentController {
     private static final Map<Long, Payment> payments = new HashMap<>();
 
     static {
-        payments.put(1L,new Payment(1L,100.0));
-        payments.put(2L,new Payment(2L,200.0));
-        payments.put(3L,new Payment(3L,300.0));
+        payments.put(1L, new Payment(1L, 100.0));
+        payments.put(2L, new Payment(2L, 200.0));
+        payments.put(3L, new Payment(3L, 300.0));
 
     }
 
