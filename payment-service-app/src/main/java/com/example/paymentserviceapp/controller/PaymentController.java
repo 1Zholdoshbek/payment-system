@@ -14,12 +14,12 @@ import java.util.Map;
 @RequestMapping("/payments")
 public class PaymentController {
 
-    private final Map<Long, Payment> payments = new HashMap<>();
+    private static final Map<Long, Payment> payments = new HashMap<>();
 
-    public PaymentController() {
-        payments.put(1L,new Payment(1L,100.0));
-        payments.put(2L,new Payment(2l,200.0));
-        payments.put(3L,new Payment(3l,300.0));
+    static {
+        payments.put(1L, new Payment(1L, 100.0));
+        payments.put(2L, new Payment(2L, 200.0));
+        payments.put(3L, new Payment(3L, 300.0));
 
     }
 
