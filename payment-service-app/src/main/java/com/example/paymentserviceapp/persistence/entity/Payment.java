@@ -25,12 +25,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class Payment {
 
     @Id
     @GeneratedValue(generator = "UUID")
+    @EqualsAndHashCode.Include
     @Column(name = "guid", nullable = false, unique = true)
     private UUID guid;
 
