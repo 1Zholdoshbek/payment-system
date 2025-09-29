@@ -1,6 +1,9 @@
 package com.example.paymentserviceapp.controller;
 import com.example.paymentserviceapp.persistence.entity.Payment;
 import com.example.paymentserviceapp.persistency.PaymentRepository;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,21 +15,17 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/payments")
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final PaymentRepository paymentRepository;
-
-    public PaymentController(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
-
 
     @GetMapping
     public List<Payment> getPayments() {
         return paymentRepository.findAll();
     }
 
-    @GetMapping("{guid}")
+    @GetMapping("/{guid}")
     public ResponseEntity<Payment> getPayment(@PathVariable UUID guid) {
         return paymentRepository.findById(guid)
                 .map(ResponseEntity::ok)
