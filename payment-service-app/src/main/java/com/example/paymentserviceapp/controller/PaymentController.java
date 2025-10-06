@@ -1,22 +1,12 @@
 package com.example.paymentserviceapp.controller;
 import com.example.paymentserviceapp.persistence.entity.Payment;
+import com.example.paymentserviceapp.persistence.entity.Payment_;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
-import com.example.paymentserviceapp.persistency.PaymentRepository;
-
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,17 +16,22 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentRepository paymentRepository;
     private final PaymentService paymentService;
+
+
+    private static final String DEFAULT_SORT_FIELD = Payment_.CREATED_AT;
+    private static final String DEFAULT_SORT_DIRECTION = "desc";
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_PAGE_SIZE = 20;
 
     @GetMapping
     public List<Payment> getPayments() {
-        return paymentRepository.findAll();
+        return paymentService.getAllPayments();
     }
 
     @GetMapping("/{guid}")
     public ResponseEntity<Payment> getPayment(@PathVariable UUID guid) {
-        return paymentRepository.findById(guid)
+        return paymentService.getPaymentById(guid)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -44,10 +39,10 @@ public class PaymentController {
     @GetMapping("/search")
     public Page<Payment> searchPayments(
             @ModelAttribute PaymentFilter filter,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction
+            @RequestParam(defaultValue = "" + DEFAULT_PAGE) int page,
+            @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int size,
+            @RequestParam(defaultValue = DEFAULT_SORT_FIELD) String sortBy,
+            @RequestParam(defaultValue = DEFAULT_SORT_DIRECTION) String direction
     ) {
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -57,4 +52,3 @@ public class PaymentController {
         return paymentService.searchPaged(filter, pageable);
     }
 }
-
