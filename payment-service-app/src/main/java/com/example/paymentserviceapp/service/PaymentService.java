@@ -20,7 +20,6 @@ import java.util.UUID;
 public class PaymentService {
     private final PaymentRepository paymentRepository;
 
-
     public List<Payment> getAllPayments() {
         return paymentRepository.findAll();
     }

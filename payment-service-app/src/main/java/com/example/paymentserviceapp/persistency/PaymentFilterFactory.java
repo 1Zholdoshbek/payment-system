@@ -1,11 +1,11 @@
 package com.example.paymentserviceapp.persistency;
 
 import com.example.paymentserviceapp.persistence.entity.Payment;
+import com.example.paymentserviceapp.util.DateTimeUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 
 public final class PaymentFilterFactory {
 
@@ -21,8 +21,8 @@ public final class PaymentFilterFactory {
         }
 
         if (filter.createdAfter() != null || filter.createdBefore() != null) {
-            OffsetDateTime after = filter.createdAfter() != null ? OffsetDateTime.ofInstant(filter.createdAfter(), ZoneOffset.UTC) : OffsetDateTime.MIN;
-            OffsetDateTime before = filter.createdBefore() != null ? OffsetDateTime.ofInstant(filter.createdBefore(), ZoneOffset.UTC) : OffsetDateTime.MAX;
+            OffsetDateTime after = DateTimeUtils.toOffsetDateTimeOrMin(filter.createdAfter());
+            OffsetDateTime before = DateTimeUtils.toOffsetDateTimeOrMax(filter.createdBefore());
             spec = spec.and(PaymentSpecifications.createdBetween(after, before));
         }
 
