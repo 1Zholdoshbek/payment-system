@@ -1,6 +1,6 @@
 package com.example.paymentserviceapp.controller;
+
 import com.example.paymentserviceapp.persistence.entity.Payment;
-import com.example.paymentserviceapp.persistence.entity.Payment_;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -24,8 +25,10 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private static final String DEFAULT_SORT_FIELD = Payment_.CREATED_AT;
-    private static final String DEFAULT_SORT_DIRECTION = "desc";
+
+    private static final String DEFAULT_SORT_FIELD = "createdAt";
+    private static final String SORT_DIRECTION_DESC = "desc";
+    private static final String DEFAULT_SORT_DIRECTION = SORT_DIRECTION_DESC;
     private static final String DEFAULT_PAGE = "0";
     private static final String DEFAULT_PAGE_SIZE = "20";
 
@@ -49,7 +52,7 @@ public class PaymentController {
             @RequestParam(defaultValue = DEFAULT_SORT_FIELD) String sortBy,
             @RequestParam(defaultValue = DEFAULT_SORT_DIRECTION) String direction
     ) {
-        Sort sort = direction.equalsIgnoreCase("desc")
+        Sort sort = direction.equalsIgnoreCase(SORT_DIRECTION_DESC)
                 ? Sort.by(sortBy).descending()
                 : Sort.by(sortBy).ascending();
 

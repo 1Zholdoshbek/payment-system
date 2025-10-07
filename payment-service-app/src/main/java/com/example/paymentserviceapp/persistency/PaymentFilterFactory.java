@@ -2,11 +2,14 @@ package com.example.paymentserviceapp.persistency;
 
 import com.example.paymentserviceapp.persistence.entity.Payment;
 import com.example.paymentserviceapp.util.DateTimeUtils;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
 import java.time.OffsetDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PaymentFilterFactory {
 
     public static Specification<Payment> fromFilter(PaymentFilter filter) {
