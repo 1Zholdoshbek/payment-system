@@ -1,6 +1,6 @@
 package com.example.paymentserviceapp.controller;
 
-import com.example.paymentserviceapp.persistence.entity.Payment;
+import com.example.paymentserviceapp.dto.PaymentDto;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -33,19 +33,17 @@ public class PaymentController {
     private static final String DEFAULT_PAGE_SIZE = "20";
 
     @GetMapping
-    public List<Payment> getPayments() {
+    public List<PaymentDto> getPayments() {
         return paymentService.getAllPayments();
     }
 
     @GetMapping("/{guid}")
-    public ResponseEntity<Payment> getPayment(@PathVariable UUID guid) {
-        return paymentService.getPaymentById(guid)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PaymentDto> getPayment(@PathVariable UUID guid) {
+        return ResponseEntity.ok(paymentService.getPaymentById(guid));
     }
 
     @GetMapping("/search")
-    public Page<Payment> searchPayments(
+    public Page<PaymentDto> searchPayments(
             @ModelAttribute PaymentFilter filter,
             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,

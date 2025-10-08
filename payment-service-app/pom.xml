@@ -25,6 +25,8 @@
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.checkstyle.plugin.version>3.3.0</maven.checkstyle.plugin.version>
         <liquibase.maven.plugin.version>4.32.0</liquibase.maven.plugin.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <mapstruct.processor.version>${mapstruct.version}</mapstruct.processor.version>
     </properties>
 
     <dependencies>
@@ -69,6 +71,17 @@
             <version>${hibernate.jpamodelgen.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.processor.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -93,6 +106,11 @@
                             <groupId>org.hibernate</groupId>
                             <artifactId>hibernate-jpamodelgen</artifactId>
                             <version>${hibernate.jpamodelgen.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
