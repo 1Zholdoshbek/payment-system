@@ -11,7 +11,9 @@ import java.util.UUID;
 public interface PaymentService {
 
     List<PaymentDto> getAllPayments();
+
     PaymentDto getPaymentById(UUID guid);
+
     Page<PaymentDto> searchPaged(PaymentFilter paymentFilter, Pageable pageable);
 
 }

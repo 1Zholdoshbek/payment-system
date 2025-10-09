@@ -26,7 +26,6 @@
         <maven.checkstyle.plugin.version>3.3.0</maven.checkstyle.plugin.version>
         <liquibase.maven.plugin.version>4.32.0</liquibase.maven.plugin.version>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <mapstruct.processor.version>${mapstruct.version}</mapstruct.processor.version>
     </properties>
 
     <dependencies>
@@ -79,7 +78,7 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>${mapstruct.processor.version}</version>
+            <version>${mapstruct.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

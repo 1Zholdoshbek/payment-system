@@ -25,8 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<PaymentDto> getAllPayments() {
-        return paymentRepository.findAll().
-                stream()
+        return paymentRepository.findAll().stream()
                 .map(paymentMapper::toPaymentDto)
                 .collect(Collectors.toList());
     }

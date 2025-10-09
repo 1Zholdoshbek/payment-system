@@ -1,6 +1,8 @@
 package com.example.paymentserviceapp.controller;
 
 import com.example.paymentserviceapp.dto.PaymentDto;
+import com.example.paymentserviceapp.dto.response.PaymentResponse;
+import com.example.paymentserviceapp.mapper.PaymentApiMapper;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final PaymentApiMapper paymentApiMapper;
 
     private static final String DEFAULT_SORT_FIELD = "createdAt";
     private static final String SORT_DIRECTION_DESC = "desc";
@@ -33,17 +36,19 @@ public class PaymentController {
     private static final String DEFAULT_PAGE_SIZE = "20";
 
     @GetMapping
-    public List<PaymentDto> getPayments() {
-        return paymentService.getAllPayments();
+    public List<PaymentResponse> getPayments() {
+        List<PaymentDto> dtos = paymentService.getAllPayments();
+        return paymentApiMapper.toResponseList(dtos);
     }
 
     @GetMapping("/{guid}")
-    public ResponseEntity<PaymentDto> getPayment(@PathVariable UUID guid) {
-        return ResponseEntity.ok(paymentService.getPaymentById(guid));
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID guid) {
+        PaymentDto paymentDto = paymentService.getPaymentById(guid);
+        return ResponseEntity.ok(paymentApiMapper.toResponse(paymentDto));
     }
 
     @GetMapping("/search")
-    public Page<PaymentDto> searchPayments(
+    public Page<PaymentResponse> searchPayments(
             @ModelAttribute PaymentFilter filter,
             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
@@ -55,6 +60,7 @@ public class PaymentController {
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return paymentService.searchPaged(filter, pageable);
+        return paymentService.searchPaged(filter, pageable)
+                .map(paymentApiMapper::toResponse);
     }
 }
