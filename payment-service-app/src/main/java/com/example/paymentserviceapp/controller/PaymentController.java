@@ -1,8 +1,10 @@
 package com.example.paymentserviceapp.controller;
 
 import com.example.paymentserviceapp.dto.PaymentDto;
+import com.example.paymentserviceapp.dto.request.PaymentFilterRequest;
 import com.example.paymentserviceapp.dto.response.PaymentResponse;
 import com.example.paymentserviceapp.mapper.PaymentApiMapper;
+import com.example.paymentserviceapp.mapper.PaymentFilterMapper;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     private final PaymentApiMapper paymentApiMapper;
+    private final PaymentFilterMapper paymentFilterMapper;
 
     private static final String DEFAULT_SORT_FIELD = "createdAt";
     private static final String SORT_DIRECTION_DESC = "desc";
@@ -49,7 +52,7 @@ public class PaymentController {
 
     @GetMapping("/search")
     public Page<PaymentResponse> searchPayments(
-            @ModelAttribute PaymentFilter filter,
+            @ModelAttribute PaymentFilterRequest filterRequest,
             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
             @RequestParam(defaultValue = DEFAULT_SORT_FIELD) String sortBy,
@@ -60,7 +63,8 @@ public class PaymentController {
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return paymentService.searchPaged(filter, pageable)
+        PaymentFilter serviceFilter = paymentFilterMapper.toServiceFilter(filterRequest);
+        return paymentService.searchPaged(serviceFilter, pageable)
                 .map(paymentApiMapper::toResponse);
     }
 }
