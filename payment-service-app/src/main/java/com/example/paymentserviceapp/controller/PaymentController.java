@@ -1,6 +1,10 @@
 package com.example.paymentserviceapp.controller;
 
-import com.example.paymentserviceapp.persistence.entity.Payment;
+import com.example.paymentserviceapp.dto.PaymentDto;
+import com.example.paymentserviceapp.dto.request.PaymentFilterRequest;
+import com.example.paymentserviceapp.dto.response.PaymentResponse;
+import com.example.paymentserviceapp.mapper.PaymentApiMapper;
+import com.example.paymentserviceapp.mapper.PaymentFilterMapper;
 import com.example.paymentserviceapp.persistency.PaymentFilter;
 import com.example.paymentserviceapp.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +29,8 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final PaymentApiMapper paymentApiMapper;
+    private final PaymentFilterMapper paymentFilterMapper;
 
     private static final String DEFAULT_SORT_FIELD = "createdAt";
     private static final String SORT_DIRECTION_DESC = "desc";
@@ -33,20 +39,20 @@ public class PaymentController {
     private static final String DEFAULT_PAGE_SIZE = "20";
 
     @GetMapping
-    public List<Payment> getPayments() {
-        return paymentService.getAllPayments();
+    public List<PaymentResponse> getPayments() {
+        List<PaymentDto> dtos = paymentService.getAllPayments();
+        return paymentApiMapper.toResponseList(dtos);
     }
 
     @GetMapping("/{guid}")
-    public ResponseEntity<Payment> getPayment(@PathVariable UUID guid) {
-        return paymentService.getPaymentById(guid)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<PaymentResponse> getPayment(@PathVariable UUID guid) {
+        PaymentDto paymentDto = paymentService.getPaymentById(guid);
+        return ResponseEntity.ok(paymentApiMapper.toResponse(paymentDto));
     }
 
     @GetMapping("/search")
-    public Page<Payment> searchPayments(
-            @ModelAttribute PaymentFilter filter,
+    public Page<PaymentResponse> searchPayments(
+            @ModelAttribute PaymentFilterRequest filterRequest,
             @RequestParam(defaultValue = DEFAULT_PAGE) int page,
             @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size,
             @RequestParam(defaultValue = DEFAULT_SORT_FIELD) String sortBy,
@@ -57,6 +63,8 @@ public class PaymentController {
                 : Sort.by(sortBy).ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        return paymentService.searchPaged(filter, pageable);
+        PaymentFilter serviceFilter = paymentFilterMapper.toServiceFilter(filterRequest);
+        return paymentService.searchPaged(serviceFilter, pageable)
+                .map(paymentApiMapper::toResponse);
     }
 }
