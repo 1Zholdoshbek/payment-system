@@ -42,4 +42,31 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAll(spec, pageable).
                 map(paymentMapper::toPaymentDto);
     }
+
+    @Override
+    public PaymentDto createPayment(PaymentDto paymentDto) {
+        Payment payment =  paymentMapper.toPaymentEntity(paymentDto);
+        payment.setGuid(null);
+        Payment savedPayment = paymentRepository.save(payment);
+        return paymentMapper.toPaymentDto(savedPayment);
+    }
+
+    @Override
+    public PaymentDto updatePayment(UUID id, PaymentDto dto) {
+        if (!paymentRepository.existsById(id)) {
+            throw new IllegalArgumentException("Платеж не найден: " + id);
+        }
+        Payment updated = paymentMapper.toPaymentEntity(dto);
+        updated.setGuid(id);
+        Payment saved = paymentRepository.save(updated);
+        return paymentMapper.toPaymentDto(saved);
+    }
+
+    @Override
+    public void delete(UUID id) {
+        if (!paymentRepository.existsById(id)) {
+            throw new IllegalArgumentException("Платеж не найден: " + id);
+        }
+        paymentRepository.deleteById(id);
+    }
 }

@@ -12,10 +12,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,10 +43,28 @@ public class PaymentController {
     private static final String DEFAULT_PAGE = "0";
     private static final String DEFAULT_PAGE_SIZE = "20";
 
+    @PostMapping
+    public ResponseEntity<PaymentResponse> create(@RequestBody PaymentDto dto) {
+        PaymentDto created = paymentService.createPayment(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(paymentApiMapper.toResponse(created));
+    }
+
     @GetMapping
     public List<PaymentResponse> getPayments() {
         List<PaymentDto> dtos = paymentService.getAllPayments();
         return paymentApiMapper.toResponseList(dtos);
+    }
+
+    @PutMapping("/{guid}")
+    public ResponseEntity<PaymentResponse> update(@PathVariable UUID guid, @RequestBody PaymentDto dto) {
+        PaymentDto updated = paymentService.updatePayment(guid, dto);
+        return ResponseEntity.ok(paymentApiMapper.toResponse(updated));
+    }
+
+    @DeleteMapping("/{guid}")
+    public ResponseEntity<Void> delete(@PathVariable UUID guid) {
+        paymentService.delete(guid);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{guid}")
