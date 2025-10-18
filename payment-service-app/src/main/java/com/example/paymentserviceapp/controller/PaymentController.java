@@ -2,6 +2,7 @@ package com.example.paymentserviceapp.controller;
 
 import com.example.paymentserviceapp.dto.PaymentDto;
 import com.example.paymentserviceapp.dto.request.PaymentFilterRequest;
+import com.example.paymentserviceapp.dto.request.PaymentRequest;
 import com.example.paymentserviceapp.dto.response.PaymentResponse;
 import com.example.paymentserviceapp.mapper.PaymentApiMapper;
 import com.example.paymentserviceapp.mapper.PaymentFilterMapper;
@@ -44,9 +45,11 @@ public class PaymentController {
     private static final String DEFAULT_PAGE_SIZE = "20";
 
     @PostMapping
-    public ResponseEntity<PaymentResponse> create(@RequestBody PaymentDto dto) {
+    public ResponseEntity<PaymentResponse> create(@RequestBody PaymentRequest request) {
+        PaymentDto dto = paymentApiMapper.toDto(request);
         PaymentDto created = paymentService.createPayment(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(paymentApiMapper.toResponse(created));
+        PaymentResponse response = paymentApiMapper.toResponse(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
@@ -56,9 +59,11 @@ public class PaymentController {
     }
 
     @PutMapping("/{guid}")
-    public ResponseEntity<PaymentResponse> update(@PathVariable UUID guid, @RequestBody PaymentDto dto) {
+    public ResponseEntity<PaymentResponse> update(@PathVariable UUID guid, @RequestBody PaymentRequest request) {
+        PaymentDto dto = paymentApiMapper.toDto(request);
         PaymentDto updated = paymentService.updatePayment(guid, dto);
-        return ResponseEntity.ok(paymentApiMapper.toResponse(updated));
+        PaymentResponse response = paymentApiMapper.toResponse(updated);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{guid}")

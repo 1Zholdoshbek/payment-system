@@ -3,39 +3,23 @@ package com.example.paymentserviceapp.mapper;
 
 import com.example.paymentserviceapp.dto.PaymentDto;
 import com.example.paymentserviceapp.persistence.entity.Payment;
-import com.example.paymentserviceapp.persistence.entity.PaymentStatus;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
-import java.util.UUID;
+import static com.example.paymentserviceapp.mapper.TestObjects.createPaymentDto;
+import static com.example.paymentserviceapp.mapper.TestObjects.createPaymentEntity;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class PaymentMapperTest {
 
-    private PaymentMapper paymentMapper;
-
-    @BeforeEach
-    void setUp() {
-        paymentMapper = Mappers.getMapper(PaymentMapper.class);
-    }
+    private final PaymentMapper paymentMapper = Mappers.getMapper(PaymentMapper.class);
 
     @Test
     void shouldMapPaymentToPaymentDto() {
-
-        Payment payment = new Payment();
-        payment.setGuid(UUID.randomUUID());
-        payment.setInquiryRefId(UUID.randomUUID());
-        payment.setAmount(new BigDecimal("1200.50"));
-        payment.setCurrency("USD");
-        payment.setTransactionRefId(UUID.randomUUID());
-        payment.setStatus(PaymentStatus.CREATED);
-        payment.setNote("Test payment");
-        payment.setCreatedAt(OffsetDateTime.now().minusDays(1));
-        payment.setUpdatedAt(OffsetDateTime.now());
+        Payment payment = createPaymentEntity();
 
         PaymentDto dto = paymentMapper.toPaymentDto(payment);
 
@@ -48,18 +32,7 @@ class PaymentMapperTest {
 
     @Test
     void shouldMapPaymentDtoToPaymentEntity() {
-
-        PaymentDto dto = new PaymentDto(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                new BigDecimal("550.75"),
-                "EUR",
-                UUID.randomUUID(),
-                PaymentStatus.PENDING,
-                "Invoice #22",
-                OffsetDateTime.now().minusDays(2),
-                OffsetDateTime.now()
-        );
+        PaymentDto dto = createPaymentDto();
 
         Payment payment = paymentMapper.toPaymentEntity(dto);
 
