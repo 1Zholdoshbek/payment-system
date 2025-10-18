@@ -2,6 +2,7 @@ package com.example.paymentserviceapp.controller;
 
 import com.example.paymentserviceapp.dto.PaymentDto;
 import com.example.paymentserviceapp.dto.request.PaymentFilterRequest;
+import com.example.paymentserviceapp.dto.request.PaymentRequest;
 import com.example.paymentserviceapp.dto.response.PaymentResponse;
 import com.example.paymentserviceapp.mapper.PaymentApiMapper;
 import com.example.paymentserviceapp.mapper.PaymentFilterMapper;
@@ -12,10 +13,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,10 +44,32 @@ public class PaymentController {
     private static final String DEFAULT_PAGE = "0";
     private static final String DEFAULT_PAGE_SIZE = "20";
 
+    @PostMapping
+    public ResponseEntity<PaymentResponse> create(@RequestBody PaymentRequest request) {
+        PaymentDto dto = paymentApiMapper.toDto(request);
+        PaymentDto created = paymentService.createPayment(dto);
+        PaymentResponse response = paymentApiMapper.toResponse(created);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
     @GetMapping
     public List<PaymentResponse> getPayments() {
         List<PaymentDto> dtos = paymentService.getAllPayments();
         return paymentApiMapper.toResponseList(dtos);
+    }
+
+    @PutMapping("/{guid}")
+    public ResponseEntity<PaymentResponse> update(@PathVariable UUID guid, @RequestBody PaymentRequest request) {
+        PaymentDto dto = paymentApiMapper.toDto(request);
+        PaymentDto updated = paymentService.updatePayment(guid, dto);
+        PaymentResponse response = paymentApiMapper.toResponse(updated);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{guid}")
+    public ResponseEntity<Void> delete(@PathVariable UUID guid) {
+        paymentService.delete(guid);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{guid}")
